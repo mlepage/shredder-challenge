@@ -3,9 +3,9 @@
 
 function love.conf(t)
     t.title = "Unshred"
-    local w, h = 4676/4, 3609/4
+    local w, h = 4676/6, 3609/6
     if w ~= math.floor(w) then w = math.ceil(w) end
-    if h ~= math.floor(h) then w = math.ceil(h) end
+    if h ~= math.floor(h) then h = math.ceil(h) end
     t.screen.width = w
     t.screen.height = h
     t.modules.audio = false

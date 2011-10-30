@@ -5,6 +5,7 @@ local abs, floor, max, min = math.abs, math.floor, math.max, math.min
 
 local data, img
 local w, h
+local spans = {}
 
 local function rgb2hsv(r, g, b)
     local max, min = max(r, g, b), min(r, g, b)
@@ -41,21 +42,59 @@ local function rgb2h(r, g, b)
 end
 
 function filter(x, y, r, g, b, a)
-    if (g < 128 and abs(rgb2h(r, g, b) - 300) <= 60) then return r, g, b, 0 end
-    return r, g, b, a
+    local h, s, v = rgb2hsv(r, g, b)
+    -- text
+    if v < 128 then return 0, 0, 0, 255 end
+    -- background
+    if g < 128 and abs(h - 300) <= 60 then return 128, 128, 128, 0 end
+    -- lines
+    if v < 224 then return 0, 128, 255, 255 end
+    -- paper
+    return 255, 255, 0, 255
+    --return r, g, b, 255
+end
+
+function findspans()
+    local spancount = 0
+    local r, g, b, a
+    local i = -1
+    local spanlist = {}
+    for y = 0, h-1 do
+        for x = 0, w-1 do
+            r, g, b, a = data:getPixel(x, y)
+            if i == -1 then
+                if a ~= 0 then i = x end -- start span
+            elseif a == 0 then
+                spanlist[#spanlist+1], i = {i, x-1}, -1 -- end span
+            end
+        end
+        if i ~= -1 then
+            spanlist[#spanlist+1], i = {i, w-1}, -1 -- end span
+        end
+        if #spanlist ~= 0 then
+            spancount = spancount + #spanlist
+            spans[y], spanlist = spanlist, {}
+        end
+    end
+    print("found", spancount)
 end
 
 function love.load()
     print("loading image")
     data = love.image.newImageData("puzzle1/puzzle1_(1 of 1)_400dpi.png")
     w, h = data:getWidth(), data:getHeight()
+    print("image", w, h)
 
-    print("masking image")
+    print("masking image background")
     data:mapPixel(filter)
 
+    print("finding spans")
+    --findspans()
+
+    print("misc")
     img = love.graphics.newImage(data)
 
-    love.graphics.setBackgroundColor(0, 255, 0)
+    love.graphics.setBackgroundColor(128, 128, 128)
     love.graphics.setColor(255, 255, 255, 255)
 end
 
@@ -63,7 +102,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.draw(img, 0, 0, 0, 0.25, 0.25)
+    love.graphics.draw(img, 0, 0, 0, 1/6, 1/6)
 end
 
 function love.keypressed(k)
