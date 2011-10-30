@@ -7,6 +7,7 @@ local data, img
 local sx, sy, w, h = 1/6, 1/6
 local spans, spancount = {}, 0
 local chads, unusedchads = {}, {}
+local frame = 0
 
 local function rgb2hsv(r, g, b)
     local max, min = max(r, g, b), min(r, g, b)
@@ -112,6 +113,18 @@ local function chadat(x, y)
     return nil
 end
 
+local function chadcontains(chad, x, y)
+    local spanlist = chad.spans[y]
+    if spanlist then
+        for _, span in ipairs(spanlist) do
+            if span[1] <= x and x <= span[2] then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 -- builds an index of all spans in the image
 function indexspans()
     print("indexing spans...")
@@ -178,9 +191,12 @@ function preparechads()
         if spanlist ~= nil then
             for _, span in ipairs(spanlist) do
                 if not visited[span] then
-                    local chad = { area=0, spans={} }
+                    local chad = { area=0, spans={}, r=0 }
                     expand(chad, y, span, visited)
                     chads[#chads+1] = chad
+                    chad.ox, chad.oy = (chad.xmax - chad.xmin + 1)/2,
+                            (chad.ymax - chad.ymin + 1)/2
+                    chad.x, chad.y = chad.xmin + chad.ox, chad.ymin + chad.oy
                 end
             end
         end
@@ -198,6 +214,7 @@ function cullchads()
         local w, h = chad.xmax - chad.xmin + 1, chad.ymax - chad.ymin + 1
         if 50 <= w and w <= 150 and 300 <= h and h <= 600 then
             chads[#chads+1] = chad
+            chad.id = #chads
         else
             unusedchads[#unusedchads+1] = chad
             -- blank out pixels
@@ -214,6 +231,23 @@ function cullchads()
     print("chads:", #chads)
 end
 
+function makechadimages()
+    for _, chad in ipairs(chads) do
+        local w, h = chad.xmax - chad.xmin + 1, chad.ymax - chad.ymin + 1
+        local data2 = love.image.newImageData(w, h)
+        data2:paste(data, 0, 0, chad.xmin, chad.ymin, w, h)
+        for y = chad.ymin, chad.ymax do
+            for x = chad.xmin, chad.xmax do
+                if not chadcontains(chad, x, y) then
+                    data2:setPixel(x - chad.xmin, y - chad.ymin, 128, 128, 128, 0)
+                end
+            end
+        end
+        local image = love.graphics.newImage(data2)
+        chad.image = image
+    end
+end
+
 function love.load()
     print("loading image...")
     data = love.image.newImageData("puzzle1/puzzle1_(1 of 1)_400dpi.png")
@@ -226,6 +260,7 @@ function love.load()
     indexspans()
     preparechads()
     cullchads()
+    makechadimages()
 
     -- color each chad for fun
     --for i, chad in ipairs(chads) do
@@ -242,10 +277,18 @@ function love.load()
 end
 
 function love.update(dt)
+    frame = frame + 1
+    --for i, chad in ipairs(chads) do
+    --    chad.r = frame/4800*chad.id
+    --end
 end
 
 function love.draw()
-    love.graphics.draw(img, 0, 0, 0, sx, sy)
+    for i, chad in ipairs(chads) do
+        love.graphics.draw(chad.image, chad.x*sx, chad.y*sy,
+                chad.r, sx, sy, chad.ox, chad.oy)
+    end
+    --love.graphics.draw(img, 0, 0, 0, sx, sy)
 end
 
 function love.keypressed(k)
@@ -256,6 +299,7 @@ end
 
 function love.mousepressed(x, y, button)
     if button == "l" then
-        print("chadat:", chadat(x/sx, y/sy))
+        local chad = chadat(x/sx, y/sy)
+        print("chadat:", chad and chad.id or -1)
     end
 end
