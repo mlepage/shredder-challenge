@@ -2,6 +2,7 @@
 -- Copyright (C) 2011 Marc Lepage
 
 local abs, floor, max, min = math.abs, math.floor, math.max, math.min
+local asin, sqrt = math.asin, math.sqrt
 
 local data, img
 local sx, sy, w, h = 1/6, 1/6
@@ -231,6 +232,56 @@ function cullchads()
     print("chads:", #chads)
 end
 
+function linearregression(points)
+    local n, sumx, sumy, sumxy, sumxx = #points, 0, 0, 0, 0
+    for _, point in ipairs(points) do
+        local x, y = point[1], point[2]
+        sumx, sumy = sumx + x, sumy + y
+        sumxy, sumxx = sumxy + x*y, sumxx + x*x
+    end
+    local slope = (n*sumxy - sumx*sumy) / (n*sumxx - sumx*sumx)
+    return slope
+end
+
+function analyzechads()
+    for _, chad in ipairs(chads) do
+        -- get span widths
+        local widths = {}
+        for _, spanlist in pairs(chad.spans) do
+            widths[#widths+1] = spanlist[#spanlist][2] - spanlist[1][1] + 1
+        end
+        -- get median span width
+        table.sort(widths)
+        if #widths % 2 == 0 then
+            chad.swmed = (widths[#widths/2] + widths[#widths/2+1]) / 2
+        else
+            chad.swmed = widths[(#widths+1)/2]
+        end
+        -- try to correct orientation to vertical
+        local tol = 0.1 * chad.swmed
+        local points = {}
+        for y = chad.ymin, chad.ymax do
+            local spanlist = chad.spans[y]
+            local xmin, xmax = spanlist[1][1], spanlist[#spanlist][2]
+            local sw = xmax - xmin + 1
+            if abs(sw - chad.swmed) <= tol then
+                -- get point in chad's coordinte system, but flip x and y
+                local xcenter = xmin + sw/2
+                points[#points+1] = { y - chad.oy, xcenter - chad.ox }
+            else
+                -- color out rows that are ignored
+                for x = xmin, xmax do
+                    data:setPixel(x, y, 255, 0, 255, 255)
+                end
+            end
+        end
+        local slope = linearregression(points)
+        local norm = sqrt(1 + slope*slope)
+        chad.rot = asin(slope/norm)
+    end
+end
+
+-- makes an image for each chad
 function makechadimages()
     for _, chad in ipairs(chads) do
         local w, h = chad.xmax - chad.xmin + 1, chad.ymax - chad.ymin + 1
@@ -260,6 +311,7 @@ function love.load()
     indexspans()
     preparechads()
     cullchads()
+    analyzechads()
     makechadimages()
 
     -- color each chad for fun
@@ -278,9 +330,10 @@ end
 
 function love.update(dt)
     frame = frame + 1
-    --for i, chad in ipairs(chads) do
-    --    chad.r = frame/4800*chad.id
-    --end
+    local alt = frame%120 < 60
+    for i, chad in ipairs(chads) do
+        chad.r = alt and chad.rot or 0
+    end
 end
 
 function love.draw()
@@ -300,6 +353,8 @@ end
 function love.mousepressed(x, y, button)
     if button == "l" then
         local chad = chadat(x/sx, y/sy)
-        print("chadat:", chad and chad.id or -1)
+        if chad then
+            print("chadat:", chad.id, chad.swmed, chad.slope, chad.rot)
+        end
     end
 end
