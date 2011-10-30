@@ -1,0 +1,79 @@
+PUZZLE 1
+
+MANDATORY QUESTIONS:
+
+Responses to the following items are mandatory.  Failure to provide responses will 
+result in no points being awarded for this puzzle.
+
+1) What is the appropriate title being referenced? (Required)
+
+   ANSWER:	_________  [2 Points]
+
+
+2) Please describe the logic you (and/or your team) used to answer the previous 
+   question. (Required)
+ 
+   ANSWER:	_________	
+__________________________________________________________________________________
+
+ADDITIONAL QUESTIONS:
+
+The following optional questions will allow the project team to compile data for 
+analysis of the various reconstruction methodologies used by the Challenge 
+participants in order to help determine the most effective techniques.
+
+3) Did you complete Puzzle 1 by manual means, computer algorithm, or a combination? 
+
+   ANSWER:	Manual
+		Algorithm
+		Combination
+		Other  __________
+
+4) Approximately how much time did you (and/or your team) take to complete Puzzle 
+1? If time was spent on distinct tasks, please list those individually (e.g., 20 
+man-hours developing algorithms, 15 man-hours running algorithms, 10 hours manually 
+sorting, 2 hours solving puzzle, etc.)
+
+   ANSWER:	__________
+
+5) Briefly describe the methodology by which you (and/or your team) attempted to 
+   solve Puzzle 1.
+
+   ANSWER:	__________
+__________________________________________________________________________________
+
+SUBMISSION INSTRUCTIONS:
+
+Registered participants may submit their solution for each puzzle via the “Submit 
+Solutions” tab on the Challenge website.  Registered participants are allowed to 
+submit solutions for each puzzle as many times as they desire, but only the 
+answers contained in their latest submission will receive a score.  For puzzles 
+in which multiple answers are required, all answers must be submitted in the same 
+upload.  Puzzle solutions may be submitted individually, in any order, and at any 
+time prior to the deadline.  There is no requirement to submit solutions for all 
+five puzzles.  There is no requirement to reconstruct documents completely, only 
+reconstructed sufficiently to answer the required question(s).  
+  
+Submitted solutions must be in ZIP file format, no larger than 20MB, and 
+contain the following: 
+
+(1) Image(s) of the reconstructed document(s) in a common image format (TIF, JPG, 
+etc); and 
+
+(2) TXT file containing answers to the mandatory and additional questions.
+
+All submitted files must be named using to the following convention: “puzzleX.ext” 
+(e.g., puzzle1.zip, puzzle1.jpg, puzzle1.txt).  The website will automatically tag 
+uploaded files with the registered participant’s identification and time of 
+submission. The website will display confirmation of a successful file upload.
+__________________________________________________________________________________
+
+HOW TO ZIP A FILE:
+
+Windows has a built-in zip capability so that you can compress files by using the
+Compressed (zipped) Folder feature. Highlight one or more files to select them, 
+right-click over a file, point to Send to (Send in XP) on the shortcut menu, and then
+click Compressed (zipped) Folder.  
+
+Mac OS X Finder can also compress files by creating a compressed archive. Highlight
+one or more files to select them and choose Create Archive from the File menu.
