@@ -268,16 +268,17 @@ function analyzechads()
                 -- get point in chad's coordinte system, but flip x and y
                 local xcenter = xmin + sw/2
                 points[#points+1] = { y - chad.oy, xcenter - chad.ox }
-            else
+            --else
                 -- color out rows that are ignored
-                for x = xmin, xmax do
-                    data:setPixel(x, y, 255, 0, 255, 255)
-                end
+                --for x = xmin, xmax do
+                --    data:setPixel(x, y, 255, 0, 255, 255)
+                --end
             end
         end
         local slope = linearregression(points)
         local norm = sqrt(1 + slope*slope)
         chad.rot = asin(slope/norm)
+        chad.r = chad.rot
     end
 end
 
