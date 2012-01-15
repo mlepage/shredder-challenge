@@ -1,2 +1,2 @@
 #!/bin/sh
-./love.app/Contents/MacOS/love unshred
+tools/love.app/Contents/MacOS/love unshred
